@@ -1,0 +1,141 @@
+/* Utility class for JavaScript */
+.hidden {
+    display: none;
+}
+
+/* --- (NEW) Profile Section Styles --- */
+#profileSection {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* We are re-using .driver-card from style.css!
+  We just add a few tweaks.
+*/
+.driver-card.profile-view {
+    max-width: 600px; /* Stop it from stretching 100% */
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* (NEW) Biography section for the card */
+.driver-bio-section {
+    padding: 15px 20px;
+    border-top: 1px solid #555;
+    color: #ccc;
+}
+.driver-bio-section strong {
+    color: #fff;
+    font-weight: 700;
+}
+.driver-bio-section p {
+    margin: 10px 0 0 0;
+    line-height: 1.6;
+}
+.driver-bio-section .driver-bio-empty {
+    font-style: italic;
+    color: #888;
+}
+
+/* --- (NEW) Modal & Form Styles (for Edit Profile) --- */
+/* We borrow from style.css but override for the driver theme */
+
+#editProfileModal .modal-content {
+    background: #3a3a3a;
+    color: #fff;
+    width: 600px;
+}
+
+#editProfileModal .form-group {
+    margin-bottom: 15px;
+}
+
+#editProfileModal .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #ccc;
+}
+
+#editProfileModal input[type="text"],
+#editProfileModal input[type="tel"],
+#editProfileModal input[type="date"],
+#editProfileModal select,
+#editProfileModal textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #555;
+    background: #444;
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Quicksand', Arial, sans-serif;
+    font-size: 1rem;
+}
+
+#editProfileModal textarea {
+    resize: vertical;
+}
+
+#editProfileModal .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* --- (NEW) File Upload Styles --- */
+.file-upload-group {
+    border: 2px dashed #555;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background: #404040;
+}
+
+.file-upload-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-upload {
+    background: #5e5e5e;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+}
+.btn-upload:hover {
+    background: #6a6a6a;
+}
+
+#fileName {
+    font-style: italic;
+    color: #aaa;
+}
+
+.picture-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto;
+    background: #444;
+    border: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.picture-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.placeholder-picture {
+    color: #888;
+}
