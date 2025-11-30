@@ -7,9 +7,24 @@ if (!isset($_SESSION['accountID']) || $_SESSION['accountType'] !== 'Driver') {
     exit();
 }
 
+// --- USER VARIABLES ---
 $firstName = $_SESSION['firstName'];
+$lastName = $_SESSION['lastName'];
+$fullName = $firstName . ' ' . $lastName;
+$profileFilename = $_SESSION['profileImg'] ?? null;
 $accountType = htmlspecialchars($_SESSION['accountType']);
-$driverId = $_SESSION['accountID'];
+$adminID = $_SESSION['accountID'];
+
+// Profile Image Logic
+if (!empty($profileFilename)) {
+    $profileImgSrc = BASE_URL . "uploads/" . $profileFilename;
+} else {
+    $profileImgSrc = BASE_URL . "assets/default-user.png";
+}
+
+// Determine View
+$view = isset($_GET['view']) ? $_GET['view'] : 'dashboard';
+$message = ''; 
 ?>
 <!DOCTYPE html>
 <html lang="en">

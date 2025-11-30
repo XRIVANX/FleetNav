@@ -10,7 +10,7 @@ if (isset($_SESSION['status'])) {
     unset($_SESSION['status']); // Clear status immediately after reading
 }
 
-$message = ""; // Variable to store immediate login errors
+// Note: Removed global $message variable as we are now using the Modal for everything.
 
 // --- Function Definitions ---
 
@@ -18,22 +18,32 @@ $message = ""; // Variable to store immediate login errors
  * Handles the user login process.
  */
 function loginUser($conn) {
-    global $message;
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])) {
         $email = trim($_POST['email']);
         $password = $_POST['password'];
         $selectedAccountType = $_POST['account_type']; // 'Admin' or 'Driver'
 
+        // 1. Check for Empty Fields
         if (empty($email) || empty($password)) {
-            $message = "<div style='color:red; text-align:center;'>Please fill in all fields.</div>";
-            return;
+            $_SESSION['status'] = [
+                'type' => 'error',
+                'message' => 'Please fill in all fields.',
+                'role' => $selectedAccountType
+            ];
+            header("Location: " . BASE_URL . "index.php");
+            exit();
         }
 
-        // FIX 1: Retrieve all necessary fields from the database, including lastName.
-        $stmt = $conn->prepare("SELECT accountID, password, accountType, firstName, lastName FROM Accounts WHERE email = ?"); 
+        // FIX 1: Retrieve all necessary fields (Added profileImg)
+        $stmt = $conn->prepare("SELECT accountID, password, accountType, firstName, lastName, profileImg FROM Accounts WHERE email = ?"); 
         if ($stmt === false) {
-             $message = "<div style='color:red; text-align:center;'>Database error: " . $conn->error . "</div>";
-             return;
+             $_SESSION['status'] = [
+                'type' => 'error',
+                'message' => "Database error: " . $conn->error,
+                'role' => $selectedAccountType
+            ];
+            header("Location: " . BASE_URL . "index.php");
+            exit();
         }
 
         $stmt->bind_param("s", $email);
@@ -43,18 +53,19 @@ function loginUser($conn) {
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             
-            // 1. Verify password
+            // 2. Verify password
             if (password_verify($password, $user['password'])) {
-                // 2. Verify account type matches the login form used
+                // 3. Verify account type matches the login form used
                 if ($user['accountType'] === $selectedAccountType) {
                     
-                    // FIX 2: Store all required fields in the session.
+                    // FIX 2: Store all required fields in the session (Added profileImg)
                     $_SESSION['accountID'] = $user['accountID'];
                     $_SESSION['accountType'] = $user['accountType'];
                     $_SESSION['firstName'] = $user['firstName'];
-                    $_SESSION['lastName'] = $user['lastName']; // <-- THIS IS THE KEY FIX
+                    $_SESSION['lastName'] = $user['lastName'];
+                    $_SESSION['profileImg'] = $user['profileImg']; // <--- NEW LINE
                     
-                    // 3. Redirect to the correct dashboard
+                    // 4. Redirect to the correct dashboard
                     if ($user['accountType'] === 'Admin') {
                         header("Location: " . BASE_URL . "AdminPage.php");
                         exit();
@@ -63,17 +74,38 @@ function loginUser($conn) {
                         exit();
                     }
                 } else {
-                    $message = "<div style='color:red; text-align:center;'>Login error: Invalid role selection for this account.</div>";
+                    // Role mismatch error
+                    $_SESSION['status'] = [
+                        'type' => 'error',
+                        'message' => 'Login error: Invalid role selection for this account.',
+                        'role' => $selectedAccountType
+                    ];
                 }
             } else {
-                $message = "<div style='color:red; text-align:center;'>Login error: Incorrect password.</div>";
+                // Password incorrect error
+                $_SESSION['status'] = [
+                    'type' => 'error',
+                    'message' => 'Login error: Incorrect password.',
+                    'role' => $selectedAccountType
+                ];
             }
         } else {
-            $message = "<div style='color:red; text-align:center;'>Login error: No account found with that email.</div>";
+            // Email not found error
+            $_SESSION['status'] = [
+                'type' => 'error',
+                'message' => 'Login error: No account found with that email.',
+                'role' => $selectedAccountType
+            ];
         }
         $stmt->close();
+
+        // If we reached here, an error occurred inside the logic blocks above.
+        // Redirect back to index to show the modal.
+        header("Location: " . BASE_URL . "index.php");
+        exit();
     }
 }
+
 /**
  * Handles the user registration process.
  */
@@ -87,9 +119,8 @@ function registerUser($conn) {
         $password = $_POST['password'];
         $confirmPassword = $_POST['confirm_password'];
         
-        // NEW: Retrieve the uploaded profile image path from the hidden input
+        // Retrieve the uploaded profile image path
         $profileImg = trim($_POST['uploadedProfileImagePath'] ?? '');
-        // Set to NULL if the path is empty (user didn't upload a picture)
         $profileImg = empty($profileImg) ? null : $profileImg; 
 
         $accountType = isset($_POST['account_role_type']) ? trim($_POST['account_role_type']) : 'Driver';
@@ -136,7 +167,6 @@ function registerUser($conn) {
         }
         $check_stmt->close();
         
-        // MODIFIED SQL: Added profileImg column
         $sql = "INSERT INTO Accounts (firstName, lastName, email, contactNo, address, password, accountType, profileImg) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         
@@ -150,7 +180,6 @@ function registerUser($conn) {
              exit();
         }
 
-        // MODIFIED BIND_PARAM: Added one 's' for profileImg (total 8 strings)
         $stmt->bind_param("ssssssss", 
             $firstName, 
             $lastName, 
@@ -159,7 +188,7 @@ function registerUser($conn) {
             $address, 
             $hashed_password, 
             $accountType,
-            $profileImg // NEW parameter
+            $profileImg
         );
         
         if ($stmt->execute()) {
@@ -177,19 +206,18 @@ function registerUser($conn) {
         }
         $stmt->close();
         
-        // Redirect to index.php to trigger the modal display on page load
         header("Location: " . BASE_URL . "index.php");
         exit();
     }
 }
 
 /**
- * Handles the password reset request (sends a fictitious email).
+ * Handles the password reset request.
  */
 function requestPasswordReset($conn) {
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_request_submit'])) {
         $email = trim($_POST['email']);
-        $redirectRole = 'Admin'; // Default to Admin Login after password reset
+        $redirectRole = 'Admin'; // Default view
 
         if (empty($email)) {
             $_SESSION['status'] = [
@@ -201,25 +229,12 @@ function requestPasswordReset($conn) {
             exit();
         }
         
-        $stmt = $conn->prepare("SELECT accountID FROM Accounts WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows === 1) {
-            $_SESSION['status'] = [
-                'type' => 'success',
-                'message' => 'If an account with that email exists, a password reset link has been sent.',
-                'role' => $redirectRole
-            ];
-        } else {
-            $_SESSION['status'] = [
-                'type' => 'success',
-                'message' => 'If an account with that email exists, a password reset link has been sent.',
-                'role' => $redirectRole
-            ];
-        }
-        $stmt->close();
+        // Logic essentially the same, utilizing session for the message
+        $_SESSION['status'] = [
+            'type' => 'success',
+            'message' => 'If an account with that email exists, a password reset link has been sent.',
+            'role' => $redirectRole
+        ];
 
         header("Location: " . BASE_URL . "index.php");
         exit();
@@ -227,8 +242,6 @@ function requestPasswordReset($conn) {
 }
 
 // Call the appropriate function based on the form submission
-$intended_role = isset($_GET['role']) && ($_GET['role'] === 'Admin' || $_GET['role'] === 'Driver') ? $_GET['role'] : 'Driver';
-
 if (isset($_POST['login_submit'])) {
     loginUser($conn);
 } elseif (isset($_POST['register_submit'])) {

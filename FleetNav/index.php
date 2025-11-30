@@ -11,13 +11,6 @@ include("indexFunctions.php");
     <title>FleetNav - Login</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>loginstyle.css">
     <style>
-        /* General styling for login message (if needed) */
-        .status-message {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
         /* --- Pop-up Modal CSS --- */
         .modal-overlay {
             position: fixed;
@@ -89,9 +82,7 @@ include("indexFunctions.php");
     <div class="main-content">
         <div class="container">
 
-            <?php echo isset($message) ? $message : ''; ?>
-
-            <div id="role-select" class="page <?php echo (!isset($status_data) && !isset($message)) ? 'active' : ''; ?>">
+            <div id="role-select" class="page <?php echo (!isset($status_data)) ? 'active' : ''; ?>">
                 <h2>LOGIN AS</h2>
                 <button class="choice-btn" onclick="showLoginPage('Admin')">Admin</button>
                 <div class="or-text">OR</div>
@@ -261,14 +252,17 @@ include("indexFunctions.php");
             modalBody.textContent = message;
             modalOverlay.style.display = 'flex'; // Show modal
 
+            // Make sure the background shows the relevant page immediately (e.g., if login failed, show login form behind modal)
+            showLoginPage(role);
+
             // Set up the redirect action on button click
             modalCloseBtn.onclick = function() {
                 modalOverlay.style.display = 'none'; // Hide modal
-                // Redirects to the appropriate login page based on the role
+                // Redirects/stays on the appropriate login page based on the role
                 showLoginPage(role); 
             };
             
-            // Also close and redirect if the user clicks the overlay
+            // Also close if the user clicks the overlay
             modalOverlay.onclick = function(event) {
                 if (event.target === modalOverlay) {
                     modalOverlay.style.display = 'none';
@@ -278,8 +272,7 @@ include("indexFunctions.php");
         }
 
         // --- Profile Image Upload Logic Functions ---
-        
-        // Define variables globally or use inside the DOMContentLoaded listener scope
+        // (Copied unchanged from your provided file)
         let profileFileInput, profileDropArea, profileImagePreview, profileFileNameDisplay, profileClearImageBtn, profilePreviewContainer, profileUploadMessage, profileSelectFileLink, uploadedProfileImagePath;
 
         function profileClearSelection() {
@@ -288,14 +281,14 @@ include("indexFunctions.php");
             if (profileFileNameDisplay) profileFileNameDisplay.textContent = '';
             if (profilePreviewContainer) profilePreviewContainer.style.display = 'none';
             if (profileDropArea) profileDropArea.style.display = 'block';
-            if (uploadedProfileImagePath) uploadedProfileImagePath.value = ''; // Clear hidden path input
+            if (uploadedProfileImagePath) uploadedProfileImagePath.value = '';
             if (profileUploadMessage) profileUploadMessage.textContent = '';
         }
 
         function profileUploadFile(file) {
             if (profileUploadMessage) {
                 profileUploadMessage.textContent = 'Uploading...';
-                profileUploadMessage.style.color = '#ffc107'; // Yellow
+                profileUploadMessage.style.color = '#ffc107'; 
             }
             
             const formData = new FormData();
@@ -308,12 +301,11 @@ include("indexFunctions.php");
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Path to be stored in DB (assuming 'uploads/' is relative to the root)
                     const filePath = 'uploads/' + data.file; 
                     if (uploadedProfileImagePath) uploadedProfileImagePath.value = filePath;
                     if (profileUploadMessage) {
                         profileUploadMessage.textContent = 'Upload complete.';
-                        profileUploadMessage.style.color = '#28a745'; // Green
+                        profileUploadMessage.style.color = '#28a745'; 
                     }
                 } else {
                     if (profileUploadMessage) {
@@ -321,23 +313,11 @@ include("indexFunctions.php");
                         profileUploadMessage.style.color = 'red';
                     }
                     profileClearSelection();
-                    if (profileDropArea) {
-                        profileDropArea.classList.remove('dragover');
-                        profileDropArea.style.display = 'block';
-                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                if (profileUploadMessage) {
-                    profileUploadMessage.textContent = 'An unexpected error occurred during upload.';
-                    profileUploadMessage.style.color = 'red';
-                }
                 profileClearSelection();
-                if (profileDropArea) {
-                    profileDropArea.classList.remove('dragover');
-                    profileDropArea.style.display = 'block';
-                }
             });
         }
 
@@ -346,14 +326,12 @@ include("indexFunctions.php");
                 if (profileDropArea) profileDropArea.style.display = 'none';
                 if (profilePreviewContainer) profilePreviewContainer.style.display = 'flex'; 
                 
-                // 1. Show local preview
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     if (profileImagePreview) profileImagePreview.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
 
-                // 2. Display file name and start upload
                 if (profileFileNameDisplay) profileFileNameDisplay.textContent = file.name;
                 profileUploadFile(file);
             } else {
@@ -362,15 +340,13 @@ include("indexFunctions.php");
             }
         }
         
-        // Re-using the utility function for drag and drop
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
         }
 
-        // Run this function when the page loads
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize elements inside DOMContentLoaded
+            // Initialize elements
             profileFileInput = document.getElementById('profileImgInput');
             profileDropArea = document.getElementById('profileDropArea');
             profileImagePreview = document.getElementById('profileImagePreview');
@@ -381,54 +357,30 @@ include("indexFunctions.php");
             profileSelectFileLink = document.getElementById('profileSelectFileLink');
             uploadedProfileImagePath = document.getElementById('uploadedProfileImagePath');
 
-
+            // --- MAIN STATUS MODAL LOGIC ---
             if (statusData && statusData.message) {
-                // If status data exists (from a registration/reset attempt), show the modal
+                // If status data exists (from Login OR Registration), show the modal
                 showStatusModal(statusData.type, statusData.message, statusData.role);
-            }
-            // Logic to re-display the correct form if there was an immediate (non-session) login error
-            else if (document.getElementById('login-admin').querySelector('div[style*="color:red"]')) {
-                 showPage('login-admin');
-            }
-             else if (document.getElementById('login-driver').querySelector('div[style*="color:red"]')) {
-                 showPage('login-driver');
-            }
-            else {
+            } else {
                 // Otherwise, show the role selection page by default
                 showPage('role-select');
             }
 
-            // --- Profile Upload Event Listeners ---
+            // --- Event Listeners for Upload ---
+            if (profileSelectFileLink) profileSelectFileLink.addEventListener('click', () => { profileFileInput.click(); });
+            if (profileFileInput) profileFileInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) profileShowPreview(file); });
+            if (profileClearImageBtn) profileClearImageBtn.addEventListener('click', profileClearSelection);
 
-            if (profileSelectFileLink) {
-                profileSelectFileLink.addEventListener('click', () => { profileFileInput.click(); });
-            }
-
-            if (profileFileInput) {
-                profileFileInput.addEventListener('change', (e) => { 
-                    const file = e.target.files[0];
-                    if (file) profileShowPreview(file);
-                });
-            }
-
-            if (profileClearImageBtn) {
-                profileClearImageBtn.addEventListener('click', profileClearSelection);
-            }
-
-            // Drag and Drop Listeners
             if (profileDropArea) {
                 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                     profileDropArea.addEventListener(eventName, preventDefaults, false);
                 });
-
                 ['dragenter', 'dragover'].forEach(eventName => {
                     profileDropArea.addEventListener(eventName, () => { profileDropArea.classList.add('dragover'); }, false);
                 });
-
                 ['dragleave', 'drop'].forEach(eventName => {
                     profileDropArea.addEventListener(eventName, () => { profileDropArea.classList.remove('dragover'); }, false);
                 });
-
                 profileDropArea.addEventListener('drop', (e) => {
                     let dt = e.dataTransfer;
                     let files = dt.files;

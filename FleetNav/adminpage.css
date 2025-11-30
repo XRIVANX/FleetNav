@@ -1,8 +1,12 @@
 /*
- * Dashboard styles derived from loginstyle.css aesthetic (Segoe UI font, #333 dark color, #007bff primary color)
+ * ADMIN DASHBOARD STYLES
+ * Aesthetic: Segoe UI font, #333 dark color, #007bff primary color
+ * Organization: Global/Layout -> Navigation -> Components -> Utilities -> Modals
  */
 
-/* --- Global Reset & Font --- */
+/* ========================================================= */
+/* 1. GLOBAL RESET & FONT                                    */
+/* ========================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -17,7 +21,15 @@ body {
   display: flex;
 }
 
-/* --- Container & Layout (Sidebar + Content) --- */
+/* --- Utility/Text Styles --- */
+.text-unassigned {
+  color: #888;
+  font-style: italic;
+}
+
+/* ========================================================= */
+/* 2. LAYOUT & NAVIGATION                                    */
+/* ========================================================= */
 .container {
   display: flex;
   width: 100%;
@@ -67,16 +79,16 @@ body {
   transition: background-color 0.2s, border-left 0.2s;
 }
 
-.nav-btn:hover {
+.nav-btn:hover,
+.nav-btn.active {
   background-color: #555;
 }
 
 .nav-btn.active {
-  background-color: #555;
   border-left: 5px solid #007bff; /* Primary blue from loginstyle */
 }
 
-/* --- TOP NAVIGATION BAR (Header) --- */
+/* --- Top Navigation Bar (Header) --- */
 .top-nav-bar {
   display: flex;
   justify-content: space-between;
@@ -102,18 +114,26 @@ body {
   font-size: 0.9rem;
 }
 
+.user-profile .profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bff;
+}
+
 .user-profile .user-name {
-  font-weight: 500;
-  color: #555;
+  font-weight: 600;
+  color: #333;
   white-space: nowrap;
 }
 
 .user-profile .logout-btn {
-  background-color: #007bff; /* Primary blue for Logout button */
+  background-color: #007bff; /* Primary blue */
   color: white;
   border: none;
   padding: 8px 15px;
-  border-radius: 8px; /* Matching login buttons */
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -124,7 +144,7 @@ body {
   background-color: #0056b3;
 }
 
-/* --- MAIN CONTENT AREA --- */
+/* --- Main Content Area --- */
 .main-content-area {
   flex-grow: 1;
   padding: 30px;
@@ -132,14 +152,17 @@ body {
   overflow-y: auto;
 }
 
-/* --- General Widget/Section Styles --- */
+/* ========================================================= */
+/* 3. CARD & WIDGET COMPONENTS                               */
+/* ========================================================= */
+
+/* --- General Widget/Section Styles (For #current-assignment) --- */
 #current-assignment {
   background-color: white;
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   color: #333;
-  /* Specific highlight for sections */
   border-left: 5px solid #007bff;
 }
 
@@ -150,10 +173,9 @@ body {
   padding-bottom: 10px;
 }
 
-/* --- Dashboard Charts Grid (New Styles) --- */
+/* --- Dashboard Charts Grid --- */
 #dashboard-charts {
   display: grid;
-  /* Arranges charts in up to 3 columns, wrapping them if screen is smaller */
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
   margin-top: 10px;
@@ -180,7 +202,6 @@ body {
 
 .chart-container {
   width: 100%;
-  /* Fixed height ensures all charts are the same size */
   height: 200px;
   margin-bottom: 20px;
 }
@@ -202,7 +223,6 @@ body {
   gap: 8px;
 }
 
-/* Color indicators for the legend items */
 .chart-legend span::before {
   content: "";
   display: inline-block;
@@ -211,42 +231,31 @@ body {
   border-radius: 50%;
 }
 
-/* Available/In Progress color (Blue) */
 .chart-legend span:first-child::before {
-  background-color: #007bff;
+  background-color: #007bff; /* Available/In Progress color (Blue) */
 }
 
-/* Unavailable/Not In Progress color (Light Grey) */
 .chart-legend span:last-child::before {
-  background-color: #ced4da;
+  background-color: #ced4da; /* Unavailable/Not In Progress color (Light Grey) */
 }
 
-/* ========================================================= */
-/* TRUCKS / DRIVERS LIST CONTAINER STYLES (MODIFIED)         */
-/* ========================================================= */
+/* --- General List/Grid Container Wrapper --- */
 #trucks-list,
 #drivers-list {
-  /* MODIFICATION: Restrict max width and center the list */
   max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-
-  margin-top: 10px;
+  margin: 10px auto 0 auto;
   background-color: white;
   padding: 0;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Section Header (Used for both Trucks and Drivers) --- */
+/* --- Section Header (Title + Action Button) --- */
 .section-header {
-  /* Set to flex to arrange title and button horizontally */
   display: flex;
-  /* MODIFIED: Aligning to space-between to place button on the right */
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-
   background-color: white;
   padding: 15px 20px;
   border-radius: 10px 10px 0 0;
@@ -261,56 +270,21 @@ body {
   flex-shrink: 0;
 }
 
-/* --- Status Badges (For truckStatus/driver status) --- */
-.status-badge {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-weight: 600;
-  font-size: 0.8rem;
-  text-transform: capitalize;
-}
-
-.status-available {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status-unavailable {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.status-in-transit,
-.status-maintenance {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-/* --- Action Button (Add Truck/Driver) --- */
-.action-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
+.empty-state {
+  text-align: center;
+  padding: 50px;
+  color: #555;
+  background-color: #f8f9fa;
   border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-weight: 600;
-}
-
-.action-btn:hover {
-  background-color: #0056b3;
+  border: 1px dashed #ddd;
+  margin: 15px;
 }
 
 /* ========================================================= */
-/* TRUCK GRID STYLES (Smaller grid requested in prior step)  */
+/* 4. TRUCK CARD & GRID STYLES                               */
 /* ========================================================= */
-
 .truck-grid {
   display: grid;
-  /* Reduced minmax to 220px to allow more cards per row */
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 15px;
   padding: 15px;
@@ -335,9 +309,7 @@ body {
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Card Image Styling --- */
 .truck-image-container {
-  /* Reduced height from 160px to 140px */
   height: 140px;
   width: 100%;
   overflow: hidden;
@@ -361,7 +333,6 @@ body {
   font-size: 0.8rem;
 }
 
-/* --- Card Details (Made Smaller) --- */
 .truck-details {
   padding: 8px 10px;
   flex-grow: 1;
@@ -385,7 +356,6 @@ body {
   color: #333;
 }
 
-/* --- Card Actions (Made Smaller) --- */
 .truck-actions {
   display: flex;
   justify-content: space-around;
@@ -394,40 +364,11 @@ body {
   background-color: #f8f9fa;
 }
 
-.truck-actions .icon-btn {
-  flex-grow: 1;
-  margin: 0 3px;
-  padding: 6px;
-  border-radius: 5px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-}
-
-.truck-actions .edit-btn {
-  background-color: #eaf3ff;
-  color: #007bff;
-  border-color: #007bff;
-}
-
-.truck-actions .delete-btn {
-  background-color: #ffeaea;
-  color: #dc3545;
-  border-color: #dc3545;
-}
-
 /* ========================================================= */
-/* DRIVER GRID STYLES (NEW)                                  */
+/* 5. DRIVER CARD & GRID STYLES                              */
 /* ========================================================= */
-
 .driver-grid {
   display: grid;
-  /* Using a slightly tighter grid than trucks for compactness */
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 15px;
   padding: 15px;
@@ -445,7 +386,7 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
-  padding: 10px; /* Tighter card padding since there's no image */
+  padding: 10px;
 }
 
 .driver-card:hover {
@@ -483,10 +424,178 @@ body {
   justify-content: space-around;
   padding: 8px 0 0 0;
   border-top: 1px solid #eee;
-  margin-top: auto; /* Push actions to the bottom */
+  margin-top: auto;
 }
 
-/* Reusing existing .icon-btn, .edit-btn, .delete-btn styles for actions */
+/* =========================================================
+ * 6. DELIVERY CARD & LIST STYLES (Refined)
+ * ========================================================= */
+
+/* General Card List Container */
+.card-list {
+  display: grid;
+  /* Maintain a minimum size, but allow wider cards */
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px; /* Increased gap */
+  padding: 20px 0;
+}
+
+/* Card Item Styling (Delivery Specific) */
+.card-item {
+  background-color: #ffffff; /* White background */
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Slightly heavier shadow for emphasis */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-top: 5px solid #007bff; /* Primary blue top border */
+  border-left: none; /* Removed left border for a cleaner look */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-item:hover {
+  transform: translateY(-4px); /* Increased lift on hover */
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Details (Text content) */
+.card-details {
+  flex-grow: 1; /* Allows details section to take up available space */
+}
+
+.card-details h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.3em;
+  color: #007bff; /* Primary color for title */
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 8px;
+}
+
+.card-details p {
+  margin-bottom: 8px;
+  font-size: 0.95em;
+  color: #555;
+}
+
+/* Actions Section (Buttons) */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+/* Added specific style for a 'View Map' button if applicable */
+.view-map-btn {
+  background-color: #17a2b8; /* Info blue */
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.view-map-btn:hover {
+  background-color: #138496;
+}
+/* ========================================================= */
+/* 7. TABLE STYLES                                           */
+/* ========================================================= */
+.data-table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.data-table thead th {
+  background-color: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #fdfdfd;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+.data-table td .icon-btn {
+  padding: 6px 10px;
+  font-size: 0.8em;
+}
+
+/* ========================================================= */
+/* 8. BUTTON & BADGE UTILITIES                               */
+/* ========================================================= */
+
+/* --- Primary Action Buttons (Add Truck/Driver, Logout) --- */
+.action-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn:hover {
+  background-color: #0056b3;
+}
+
+/* --- CRUD/Inline Action Buttons (Used in Cards/Tables) --- */
+.crud-btn,
+.icon-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 600;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  color: white;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
+.crud-btn:hover,
+.icon-btn:hover {
+  opacity: 0.9;
+}
+
+/* Base style for icon buttons (used for truck/driver actions) */
+.truck-actions .icon-btn,
 .driver-actions .icon-btn {
   flex-grow: 1;
   margin: 0 3px;
@@ -500,102 +609,120 @@ body {
   gap: 4px;
   background-color: #fff;
   border: 1px solid #ddd;
+  color: inherit; /* Reset color for specific overrides */
+}
+
+/* Edit Button (Primary Blue) */
+.edit-btn {
+  background-color: #007bff;
+  color: white;
+}
+.truck-actions .edit-btn {
+  background-color: #eaf3ff;
+  color: #007bff;
+  border-color: #007bff;
 }
 .driver-actions .edit-btn:hover {
   background-color: #d0e4ff;
+}
+
+/* Delete Button (Danger Red) */
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+.truck-actions .delete-btn {
+  background-color: #ffeaea;
+  color: #dc3545;
+  border-color: #dc3545;
 }
 .driver-actions .delete-btn:hover {
   background-color: #ffcccc;
 }
 
-/* --- Other General Styles --- */
-.text-unassigned {
-  color: #888;
-  font-style: italic;
+.delete-btn.disabled,
+.btn:disabled,
+.btn[disabled] {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 50px;
-  color: #555;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px dashed #ddd;
-  margin: 15px; /* Added margin to separate from header */
+.delete-btn.disabled:hover {
+  opacity: 0.7;
+}
+
+/* --- Status Badges (Consolidated) --- */
+.status-badge,
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px; /* Use consistent radius */
+  font-weight: 600;
+  font-size: 0.8rem; /* Use consistent font size */
+  text-transform: capitalize;
+  color: #333; /* Default dark text for better contrast on lighter badges */
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.status-available,
+.status-completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-unavailable,
+.status-cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-in-transit,
+.status-maintenance,
+.status-on-route {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* Override for badge specific colors where white text is needed */
+.badge.status-active {
+  background-color: #007bff;
+  color: white;
+}
+.badge.status-in-progress {
+  background-color: #ffc107;
+  color: #333;
+}
+.badge.status-completed {
+  background-color: #28a745;
+  color: white;
+}
+.badge.status-cancelled {
+  background-color: #dc3545;
+  color: white;
+}
+.badge.status-inactive {
+  background-color: #6c757d;
+  color: white;
 }
 
 /* ========================================================= */
-/* MODAL & FORM STYLES (Continued)                           */
+/* 9. FORM STYLES                                            */
 /* ========================================================= */
-
-/* The Modal (background) */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 10;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
+.data-form {
+  padding: 10px;
 }
 
-/* Modal Content/Box */
-.modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 30px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  position: relative;
-  animation-name: animatetop;
-  animation-duration: 0.4s;
-}
-
-@keyframes animatetop {
-  from {
-    top: -300px;
-    opacity: 0;
-  }
-  to {
-    top: 0;
-    opacity: 1;
-  }
-}
-
-.modal-content h2 {
-  border-bottom: 2px solid #eee;
-  padding-bottom: 15px;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-/* The Close Button */
-.close-btn {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  position: absolute;
-  top: 10px;
-  right: 20px;
-}
-
-.close-btn:hover,
-.close-btn:focus {
-  color: #333;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* --- Form Styles --- */
 .data-form .form-group {
   margin-bottom: 15px;
   position: relative;
+  flex: 1;
 }
 
 .data-form .form-row {
@@ -603,15 +730,12 @@ body {
   gap: 20px;
 }
 
-.data-form .form-row > .form-group {
-  flex: 1;
-}
-
 .data-form label {
   display: block;
   font-weight: 600;
   margin-bottom: 5px;
   color: #555;
+  font-size: 0.9em;
 }
 
 .data-form input[type="text"],
@@ -619,17 +743,25 @@ body {
 .data-form input[type="date"],
 .data-form input[type="email"],
 .data-form input[type="password"],
-.data-form select {
+.data-form input[type="datetime-local"],
+.data-form select,
+.data-form textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.data-form textarea {
+  resize: vertical;
+  min-height: 60px;
 }
 
 .data-form .submit-btn {
   width: 100%;
-  background-color: #28a745; /* Green for creation */
+  background-color: #28a745; /* Green for creation/submit */
   color: white;
   border: none;
   padding: 12px;
@@ -660,7 +792,7 @@ body {
   margin-top: 5px;
 }
 
-/* Specific style for success/error messages */
+/* --- Alert Messages (In-form) --- */
 .alert {
   padding: 15px;
   margin-bottom: 20px;
@@ -679,9 +811,7 @@ body {
   border: 1px solid #f5c6cb;
 }
 
-/* --- TRUCK IMAGE UPLOAD STYLES (for Add/Edit Truck Modal) --- */
-
-/* Ensures the upload container takes up the available form width */
+/* --- TRUCK IMAGE UPLOAD STYLES --- */
 .upload-container {
   text-align: center;
   width: 100%;
@@ -707,7 +837,6 @@ body {
   margin: 0;
 }
 
-/* Style for the clickable "select a file" link */
 .drop-area span {
   color: #007bff;
   cursor: pointer;
@@ -715,7 +844,6 @@ body {
   text-decoration: underline;
 }
 
-/* Image preview styles */
 .preview-container {
   margin-top: 15px;
   text-align: center;
@@ -757,11 +885,161 @@ body {
   font-weight: 600;
 }
 
+/* ========================================================= */
+/* 10. MODAL STYLES                                          */
+/* ========================================================= */
+
+/* --- General Data Modal (Forms) --- */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  position: relative;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+}
+
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.close-btn {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #333;
+  text-decoration: none;
+}
+
+/* --- Message Popup (Success/Error) --- */
+.message-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.message-modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 0;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  animation: popupAnim 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes popupAnim {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.message-header {
+  padding: 15px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.msg-success {
+  background-color: #28a745;
+}
+
+.msg-error {
+  background-color: #dc3545;
+}
+
+.message-body {
+  padding: 25px 20px;
+  color: #333;
+  font-size: 1rem;
+}
+
+.message-footer {
+  padding: 10px 0 20px 0;
+}
+
+.message-close-btn {
+  background-color: #eee;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.message-close-btn:hover {
+  background-color: #ddd;
+}
+
+/* ========================================================= */
+/* 11. MEDIA QUERIES                                         */
+/* ========================================================= */
 @media (max-width: 650px) {
   .data-form .form-row {
     flex-direction: column;
   }
   .truck-grid {
-    grid-template-columns: 1fr; /* Single column on very small screens */
+    grid-template-columns: 1fr;
   }
 }
