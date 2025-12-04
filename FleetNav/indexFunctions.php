@@ -7,13 +7,8 @@ include("connect.php");
 $status_data = null;
 if (isset($_SESSION['status'])) {
     $status_data = $_SESSION['status'];
-    unset($_SESSION['status']); // Clear status immediately after reading
+    unset($_SESSION['status']);
 }
-
-// Note: Removed global $message variable as we are now using the Modal for everything.
-
-// --- Function Definitions ---
-
 /**
  * Handles the user login process.
  */
@@ -21,7 +16,7 @@ function loginUser($conn) {
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_submit'])) {
         $email = trim($_POST['email']);
         $password = $_POST['password'];
-        $selectedAccountType = $_POST['account_type']; // 'Admin' or 'Driver'
+        $selectedAccountType = $_POST['account_type']; // 'Admin', 'Super Admin' or 'Driver'
 
         // 1. Check for Empty Fields
         if (empty($email) || empty($password)) {
@@ -56,23 +51,40 @@ function loginUser($conn) {
             // 2. Verify password
             if (password_verify($password, $user['password'])) {
                 // 3. Verify account type matches the login form used
-                if ($user['accountType'] === $selectedAccountType) {
-                    
-                    // FIX 2: Store all required fields in the session (Added profileImg)
-                    $_SESSION['accountID'] = $user['accountID'];
-                    $_SESSION['accountType'] = $user['accountType'];
-                    $_SESSION['firstName'] = $user['firstName'];
-                    $_SESSION['lastName'] = $user['lastName'];
-                    $_SESSION['profileImg'] = $user['profileImg']; // <--- NEW LINE
-                    
-                    // 4. Redirect to the correct dashboard
-                    if ($user['accountType'] === 'Admin') {
-                        header("Location: " . BASE_URL . "AdminPage.php");
-                        exit();
-                    } elseif ($user['accountType'] === 'Driver') {
-                        header("Location: " . BASE_URL . "DriverPage.php");
-                        exit();
-                    }
+            if ($user['accountType'] === $selectedAccountType || ($user['accountType'] === 'Super Admin' && $selectedAccountType === 'Admin')) {
+                
+                // Set session variables
+                $_SESSION['accountID'] = $user['accountID'];
+                $_SESSION['accountType'] = $user['accountType'];
+                $_SESSION['firstName'] = $user['firstName'];
+                $_SESSION['lastName'] = $user['lastName'];
+                $_SESSION['profileImg'] = $user['profileImg']; 
+
+                // =========================================================
+                // START: LOG SUCCESSFUL LOGIN
+                // =========================================================
+                $logType = 'LOGIN'; // Matches the filter added in AdminPage.php
+                $logDetails = "User logged in successfully.";
+                
+                // Prepare insert statement for Action_Logs table
+                $logStmt = $conn->prepare("INSERT INTO Action_Logs (accountID, action_type, action_details) VALUES (?, ?, ?)");
+                if ($logStmt) {
+                    $logStmt->bind_param("iss", $user['accountID'], $logType, $logDetails);
+                    $logStmt->execute();
+                    $logStmt->close();
+                }
+                // =========================================================
+                // END: LOG SUCCESSFUL LOGIN
+                // =========================================================
+                
+                // 4. Redirect to the correct dashboard
+                if ($user['accountType'] == 'Admin' || $user['accountType'] == 'Super Admin') {
+                    header("Location: " . BASE_URL . "AdminPage.php");
+                    exit();
+                } elseif ($user['accountType'] == 'Driver') {
+                    header("Location: " . BASE_URL . "DriverPage.php");
+                    exit();
+                }
                 } else {
                     // Role mismatch error
                     $_SESSION['status'] = [
@@ -118,13 +130,15 @@ function registerUser($conn) {
         $address = trim($_POST['address']);
         $password = $_POST['password'];
         $confirmPassword = $_POST['confirm_password'];
-        
+        $adminRegPassInput = isset($_POST['super_admin_reg_pass']) ? $_POST['super_admin_reg_pass'] : null; // [MODIFIED] Generic variable name
+
         // Retrieve the uploaded profile image path
         $profileImg = trim($_POST['uploadedProfileImagePath'] ?? '');
         $profileImg = empty($profileImg) ? null : $profileImg; 
 
         $accountType = isset($_POST['account_role_type']) ? trim($_POST['account_role_type']) : 'Driver';
-        if ($accountType !== 'Admin' && $accountType !== 'Driver') {
+        // FIX: Allow Super Admin as a valid type
+        if ($accountType !== 'Admin' && $accountType !== 'Driver' && $accountType !== 'Super Admin') { 
              $accountType = 'Driver';
         }
         $redirectRole = $accountType;
@@ -138,6 +152,52 @@ function registerUser($conn) {
             header("Location: " . BASE_URL . "index.php");
             exit();
         }
+        
+        // --- [MODIFIED] Admin & Super Admin Registration Password Check ---
+        // Now applies to both 'Admin' and 'Super Admin'
+        if ($accountType === 'Super Admin' || $accountType === 'Admin') {
+            if (empty($adminRegPassInput)) {
+                 $_SESSION['status'] = [
+                    'type' => 'error',
+                    'message' => "The " . $accountType . " registration password is required.",
+                    'role' => $redirectRole
+                ];
+                header("Location: " . BASE_URL . "index.php");
+                exit();
+            }
+            
+            // 1. Fetch the official registration password from adminRegPass table
+            $pass_stmt = $conn->prepare("SELECT adminRegPass FROM adminRegPass LIMIT 1");
+            $pass_stmt->execute();
+            $pass_result = $pass_stmt->get_result();
+
+            if ($pass_result->num_rows === 0) {
+                 $_SESSION['status'] = [
+                    'type' => 'error',
+                    'message' => "Admin registration is currently disabled (no registration password configured).",
+                    'role' => $redirectRole
+                ];
+                $pass_stmt->close();
+                header("Location: " . BASE_URL . "index.php");
+                exit();
+            }
+            
+            $reg_pass_row = $pass_result->fetch_assoc();
+            $official_reg_pass = $reg_pass_row['adminRegPass'];
+            $pass_stmt->close();
+            
+            // 2. Verify the input password against the official one
+            if (!password_verify($adminRegPassInput, $official_reg_pass)) {
+                 $_SESSION['status'] = [
+                    'type' => 'error',
+                    'message' => "Invalid " . $accountType . " registration password.",
+                    'role' => $redirectRole
+                ];
+                header("Location: " . BASE_URL . "index.php");
+                exit();
+            }
+        }
+        // -------------------------------------------------------------
 
         if ($password !== $confirmPassword) {
             $_SESSION['status'] = [
@@ -212,6 +272,113 @@ function registerUser($conn) {
 }
 
 /**
+ * Handles the process of changing the Super Admin Registration Password.
+ * Requires an existing Super Admin's login credentials for authorization.
+ */
+function changeSuperAdminRegPass($conn) {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_sar_pass_submit'])) {
+        $sa_email = trim($_POST['sa_auth_email']);
+        $sa_password = $_POST['sa_auth_password'];
+        $new_reg_pass = $_POST['new_reg_pass'];
+        $confirm_new_reg_pass = $_POST['confirm_new_reg_pass'];
+        $redirectRole = 'Admin'; // Redirect to admin login page on failure/success
+
+        // 1. Basic validation
+        if (empty($sa_email) || empty($sa_password) || empty($new_reg_pass) || empty($confirm_new_reg_pass)) {
+            $_SESSION['status'] = [
+                'type' => 'error',
+                'message' => 'Please fill in all fields.',
+                'role' => $redirectRole
+            ];
+            header("Location: " . BASE_URL . "index.php");
+            exit();
+        }
+        
+        // 2. Validate Super Admin Credentials
+        // Check for 'Super Admin' account type specifically
+        $auth_stmt = $conn->prepare("SELECT password, accountType FROM Accounts WHERE email = ? AND accountType = 'Super Admin'");
+        $auth_stmt->bind_param("s", $sa_email);
+        $auth_stmt->execute();
+        $auth_result = $auth_stmt->get_result();
+
+        if ($auth_result->num_rows !== 1) {
+            $_SESSION['status'] = [
+                'type' => 'error',
+                'message' => 'Authorization failed: Invalid Super Admin Email or not a Super Admin account.',
+                'role' => $redirectRole
+            ];
+            $auth_stmt->close();
+            header("Location: " . BASE_URL . "index.php");
+            exit();
+        }
+        
+        $user = $auth_result->fetch_assoc();
+        
+        if (!password_verify($sa_password, $user['password'])) {
+            $_SESSION['status'] = [
+                'type' => 'error',
+                'message' => 'Authorization failed: Invalid Super Admin password.',
+                'role' => $redirectRole
+            ];
+            $auth_stmt->close();
+            header("Location: " . BASE_URL . "index.php");
+            exit();
+        }
+        $auth_stmt->close(); // Credentials validated
+
+        // 3. Validate new registration passwords match
+        if ($new_reg_pass !== $confirm_new_reg_pass) {
+            $_SESSION['status'] = [
+                'type' => 'error',
+                'message' => 'New registration passwords do not match.',
+                'role' => $redirectRole
+            ];
+            header("Location: " . BASE_URL . "index.php");
+            exit();
+        }
+
+        // 4. Hash the new registration password
+        $hashed_new_reg_pass = password_hash($new_reg_pass, PASSWORD_DEFAULT);
+
+        // 5. Update the adminRegPass table
+        // Update first (for existing records)
+        $update_stmt = $conn->prepare("UPDATE adminRegPass SET adminRegPass = ?");
+        $update_stmt->bind_param("s", $hashed_new_reg_pass);
+        $update_stmt->execute();
+        $rows_affected = $update_stmt->affected_rows;
+        $update_stmt->close();
+
+        if ($rows_affected === 0) {
+            // If the update failed (no rows exist), insert the first entry
+            $insert_stmt = $conn->prepare("INSERT INTO adminRegPass (adminRegPass) VALUES (?)");
+            $insert_stmt->bind_param("s", $hashed_new_reg_pass);
+            $insert_success = $insert_stmt->execute();
+            $insert_stmt->close();
+
+            if (!$insert_success) {
+                 $_SESSION['status'] = [
+                    'type' => 'error',
+                    'message' => 'Failed to set the initial Super Admin Registration Password.',
+                    'role' => $redirectRole
+                ];
+                header("Location: " . BASE_URL . "index.php");
+                exit();
+            }
+        }
+        
+        // Success
+        $_SESSION['status'] = [
+            'type' => 'success',
+            'message' => 'Super Admin Registration Password has been successfully changed.',
+            'role' => $redirectRole
+        ];
+
+        header("Location: " . BASE_URL . "index.php");
+        exit();
+    }
+}
+
+/**
  * Handles the password reset request.
  */
 function requestPasswordReset($conn) {
@@ -248,6 +415,8 @@ if (isset($_POST['login_submit'])) {
     registerUser($conn);
 } elseif (isset($_POST['reset_request_submit'])) {
     requestPasswordReset($conn);
+} elseif (isset($_POST['change_sar_pass_submit'])) {
+    changeSuperAdminRegPass($conn);
 }
 
 ?>

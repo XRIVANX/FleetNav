@@ -1,0 +1,203 @@
+/*
+ * EDIT PROFILE STYLES
+ * Inherits the aesthetic of adminpage.css and driverpage.css.
+ */
+
+/* ========================================================= */
+/* 1. GLOBAL & LAYOUT                                        */
+/* ========================================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  /* Use the light dashboard background color */
+  background-color: #f4f4f9;
+  color: #333;
+  min-height: 100vh;
+}
+
+.profile-container {
+  max-width: 700px; /* Slightly wider for better form layout */
+  margin: 50px auto;
+  padding: 30px;
+  background: white; /* White main content background */
+  border-radius: 8px;
+  /* Use a lighter, consistent shadow from the dashboards */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+  text-align: left;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #eee; /* Subtle separator */
+  padding-bottom: 15px;
+}
+
+.profile-header h2 {
+  color: #333;
+  font-weight: 600;
+}
+
+/* ========================================================= */
+/* 2. IMAGE UPLOAD & ROLE DISPLAY                            */
+/* ========================================================= */
+
+.profile-img-upload {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.profile-img-upload img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #007bff; /* Primary color border */
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.2); /* Subtle glow */
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.profile-img-upload img:hover {
+  transform: scale(1.05);
+}
+
+.profile-img-upload p {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.role-display {
+  padding: 10px 15px;
+  background-color: #e9ecef; /* Light gray background */
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.role-display strong {
+  color: #333;
+  font-weight: 700;
+}
+
+/* ========================================================= */
+/* 3. FORM ELEMENTS                                          */
+/* ========================================================= */
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+.form-group {
+  flex-grow: 1;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da; /* Consistent border color */
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* ========================================================= */
+/* 4. BUTTONS                                                */
+/* ========================================================= */
+
+.submit-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 20px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn {
+  background-color: #6c757d; /* Secondary button color */
+  margin-top: 0;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.back-btn:hover {
+  background-color: #5a6268;
+}
+
+/* ========================================================= */
+/* 5. ALERTS/MESSAGES                                        */
+/* ========================================================= */
+
+.alert-success {
+  padding: 15px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+.alert-danger {
+  padding: 15px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* ========================================================= */
+/* 6. MEDIA QUERIES                                          */
+/* ========================================================= */
+
+@media (max-width: 768px) {
+  .profile-container {
+    margin: 20px;
+    padding: 20px;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}

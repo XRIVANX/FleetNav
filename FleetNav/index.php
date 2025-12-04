@@ -10,71 +10,6 @@ include("indexFunctions.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FleetNav - Login</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>loginstyle.css">
-    <style>
-        /* --- Pop-up Modal CSS --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
-            display: none; /* Hidden by default */
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        .modal-content.success {
-            border-top: 5px solid #28a745;
-        }
-
-        .modal-content.error {
-            border-top: 5px solid #dc3545;
-        }
-        
-        .modal-header {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .modal-body {
-            margin-bottom: 20px;
-            color: #555;
-        }
-
-        .modal-close-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.2s;
-        }
-
-        .modal-close-btn:hover {
-            background-color: #0056b3;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 </head>
 <body>
     <h1 class="site-logo">FleetNav</h1>
@@ -104,7 +39,14 @@ include("indexFunctions.php");
                     <div class="form-link"><a href="#" onclick="showPage('reset-password'); return false;">Forgot Password?</a></div>
                     <button type="submit" name="login_submit" class="auth-btn">LOGIN</button>
                 </form>
-                <div class="switch-link">Don't have an account? <a href="#" onclick="showRegisterPage('Admin'); return false;">Register as Admin</a></div>
+                <div class="switch-link">Don't have an account? 
+                    <a href="#" onclick="showRegisterPage('Admin'); return false;">Register as Admin</a> 
+                    <span class="or-text" style="display:inline; margin: 0 10px;">OR</span>
+                    <a href="#" onclick="showSuperAdminRegPage(); return false;">Register as Super Admin</a>
+                </div>
+                <div class="switch-link">
+                    <a href="#" onclick="showChangeSARegPassPage(); return false;">Change Super Admin Registration Password</a>
+                </div>
                 <div class="switch-link"><a href="#" onclick="showPage('role-select'); return false;">&larr; Back to Role Selection</a></div>
             </div>
 
@@ -131,6 +73,11 @@ include("indexFunctions.php");
                 <h2 id="register-header">REGISTRATION</h2>
                 <form class="auth-form" method="POST">
                     <input type="hidden" id="account_role_type" name="account_role_type" value="Driver">
+                    
+                    <div class="form-group" id="superAdminPassGroup" style="display: none;">
+                        <label for="super_admin_reg_pass">Super Admin Registration Password</label>
+                        <input type="password" id="super_admin_reg_pass" name="super_admin_reg_pass">
+                    </div>
                     
                     <div class="form-group">
                         <label for="reg_firstName">First Name</label>
@@ -198,8 +145,36 @@ include("indexFunctions.php");
                 </form>
                 <div class="switch-link"><a href="#" onclick="showPage('role-select'); return false;">&larr; Back to Login</a></div>
             </div>
-
-        </div>
+            
+            <div id="change-super-admin-reg-pass" class="page">
+                <h2>CHANGE REGISTRATION PASSWORD</h2>
+                <div class="form-info-text">
+                    Enter your Super Admin credentials and the new Registration Password.
+                </div>
+                <form class="auth-form" method="POST">
+                    <input type="hidden" name="change_sar_pass_submit" value="1">
+                    <div class="form-group">
+                        <label for="sa_auth_email">Super Admin Email</label>
+                        <input type="email" id="sa_auth_email" name="sa_auth_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sa_auth_password">Super Admin Password</label>
+                        <input type="password" id="sa_auth_password" name="sa_auth_password" required>
+                    </div>
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+                    <div class="form-group">
+                        <label for="new_reg_pass">New Registration Password</label>
+                        <input type="password" id="new_reg_pass" name="new_reg_pass" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_new_reg_pass">Confirm New Registration Password</label>
+                        <input type="password" id="confirm_new_reg_pass" name="confirm_new_reg_pass" required>
+                    </div>
+                    <button type="submit" class="auth-btn">CHANGE PASSWORD</button>
+                </form>
+                <div class="switch-link"><a href="#" onclick="showPage('login-admin'); return false;">&larr; Back to Admin Login</a></div>
+            </div>
+            </div>
     </div>
     
     <div id="statusModal" class="modal-overlay">
@@ -226,20 +201,61 @@ include("indexFunctions.php");
         }
 
         function showLoginPage(role) {
-            // role will be 'Admin' or 'Driver'
+        // Show the appropriate login page based on role           
             if (role === 'Admin') {
                 showPage('login-admin');
+            } else if (role === 'Super Admin') {
+                showPage('login-admin');          
             } else if (role === 'Driver') {
                 showPage('login-driver');
             } else {
-                showPage('role-select'); // Fallback
+                showPage('role-select');
             }
         }
 
         function showRegisterPage(role) {
             document.getElementById('account_role_type').value = role;
             document.getElementById('register-header').textContent = role.toUpperCase() + " REGISTRATION";
+            
+            // --- [MODIFIED] Logic for Admin/Driver registration ---
+            if (role === 'Admin') {
+                // Show the password field for Admin
+                document.getElementById('superAdminPassGroup').style.display = 'block';
+                const passInput = document.getElementById('super_admin_reg_pass');
+                passInput.setAttribute('required', 'required');
+                
+                // Change the label text
+                document.querySelector("label[for='super_admin_reg_pass']").textContent = "Admin Registration Password";
+            } else {
+                // Hide for Driver
+                document.getElementById('superAdminPassGroup').style.display = 'none';
+                document.getElementById('super_admin_reg_pass').removeAttribute('required');
+            }
+            // --------------------------------------------------------------------------
+
             showPage('register');
+        }
+        
+        // --- FUNCTION for Super Admin Registration ---
+        function showSuperAdminRegPage() {
+            document.getElementById('account_role_type').value = 'Super Admin';
+            document.getElementById('register-header').textContent = "SUPER ADMIN REGISTRATION";
+
+            // --- Show Super Admin Pass field and make it required ---
+            document.getElementById('superAdminPassGroup').style.display = 'block';
+            const passInput = document.getElementById('super_admin_reg_pass');
+            passInput.setAttribute('required', 'required');
+            
+            // Change the label text
+            document.querySelector("label[for='super_admin_reg_pass']").textContent = "Super Admin Registration Password";
+            // ------------------------------------------------------------
+            
+            showPage('register');
+        }
+        
+        // --- NEW FUNCTION for Changing Super Admin Registration Password ---
+        function showChangeSARegPassPage() {
+            showPage('change-super-admin-reg-pass');
         }
         
         /**
@@ -272,7 +288,6 @@ include("indexFunctions.php");
         }
 
         // --- Profile Image Upload Logic Functions ---
-        // (Copied unchanged from your provided file)
         let profileFileInput, profileDropArea, profileImagePreview, profileFileNameDisplay, profileClearImageBtn, profilePreviewContainer, profileUploadMessage, profileSelectFileLink, uploadedProfileImagePath;
 
         function profileClearSelection() {

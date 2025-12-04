@@ -1,11 +1,9 @@
 /*
- * ADMIN DASHBOARD STYLES
- * Aesthetic: Segoe UI font, #333 dark color, #007bff primary color
- * Organization: Global/Layout -> Navigation -> Components -> Utilities -> Modals
+ * ADMIN DASHBOARD STYLES (COMPRESSED & OPTIMIZED)
  */
 
 /* ========================================================= */
-/* 1. GLOBAL RESET & FONT                                    */
+/* 1. GLOBAL & LAYOUT                                        */
 /* ========================================================= */
 * {
   margin: 0;
@@ -15,21 +13,12 @@
 }
 
 body {
-  background-color: #f4f4f9; /* Light, clean background for the overall page */
-  color: #333; /* Dark text color */
+  background-color: #f4f4f9;
+  color: #333;
   height: 100vh;
   display: flex;
 }
 
-/* --- Utility/Text Styles --- */
-.text-unassigned {
-  color: #888;
-  font-style: italic;
-}
-
-/* ========================================================= */
-/* 2. LAYOUT & NAVIGATION                                    */
-/* ========================================================= */
 .container {
   display: flex;
   width: 100%;
@@ -40,13 +29,20 @@ body {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  background-color: white; /* Main working area background */
+  background-color: white;
 }
 
-/* --- Sidebar (Dark Contrast Element) --- */
+.text-unassigned {
+  color: #888;
+  font-style: italic;
+}
+
+/* ========================================================= */
+/* 2. SIDEBAR & NAVIGATION                                   */
+/* ========================================================= */
 .sidebar {
   width: 220px;
-  background: #333; /* Dark background matching login buttons/logo color */
+  background: #333;
   color: white;
   display: flex;
   flex-direction: column;
@@ -85,17 +81,17 @@ body {
 }
 
 .nav-btn.active {
-  border-left: 5px solid #007bff; /* Primary blue from loginstyle */
+  border-left: 5px solid #007bff;
 }
 
-/* --- Top Navigation Bar (Header) --- */
+/* Top Header */
 .top-nav-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 30px;
   background: white;
-  border-bottom: 1px solid #eee; /* Subtle separator */
+  border-bottom: 1px solid #eee;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -106,7 +102,6 @@ body {
   color: #333;
 }
 
-/* --- User Profile (Top Right) --- */
 .user-profile {
   display: flex;
   align-items: center;
@@ -129,7 +124,7 @@ body {
 }
 
 .user-profile .logout-btn {
-  background-color: #007bff; /* Primary blue */
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -144,36 +139,16 @@ body {
   background-color: #0056b3;
 }
 
-/* --- Main Content Area --- */
 .main-content-area {
   flex-grow: 1;
   padding: 30px;
-  background-color: #f4f4f9; /* Light background for the dashboard area */
+  background-color: #f4f4f9;
   overflow-y: auto;
 }
 
 /* ========================================================= */
-/* 3. CARD & WIDGET COMPONENTS                               */
+/* 3. DASHBOARD WIDGETS & CHARTS                             */
 /* ========================================================= */
-
-/* --- General Widget/Section Styles (For #current-assignment) --- */
-#current-assignment {
-  background-color: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  color: #333;
-  border-left: 5px solid #007bff;
-}
-
-#current-assignment h3 {
-  color: #333;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-/* --- Dashboard Charts Grid --- */
 #dashboard-charts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -206,7 +181,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* --- Legend Styling --- */
 .chart-legend {
   width: 100%;
   display: flex;
@@ -215,6 +189,8 @@ body {
   font-weight: 500;
   padding-top: 10px;
   border-top: 1px dashed #eee;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .chart-legend span {
@@ -231,15 +207,31 @@ body {
   border-radius: 50%;
 }
 
-.chart-legend span:first-child::before {
-  background-color: #007bff; /* Available/In Progress color (Blue) */
+/* Legend Colors */
+.legend-assigned::before,
+.legend-maintenance::before,
+.legend-cancelled::before {
+  background-color: rgb(220, 53, 69);
+}
+.legend-available::before {
+  background-color: rgb(0, 123, 255);
+}
+.legend-unavailable::before,
+.legend-grey::before,
+.legend-inactive::before {
+  background-color: rgb(173, 181, 189);
+}
+.legend-in-transit::before,
+.legend-in-progress::before {
+  background-color: rgb(255, 193, 7);
+}
+.legend-complete::before {
+  background-color: rgb(40, 167, 69);
 }
 
-.chart-legend span:last-child::before {
-  background-color: #ced4da; /* Unavailable/Not In Progress color (Light Grey) */
-}
-
-/* --- General List/Grid Container Wrapper --- */
+/* ========================================================= */
+/* 4. COMMON LIST & GRID STYLES                              */
+/* ========================================================= */
 #trucks-list,
 #drivers-list {
   max-width: 100%;
@@ -250,7 +242,6 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Section Header (Title + Action Button) --- */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -260,14 +251,12 @@ body {
   padding: 15px 20px;
   border-radius: 10px 10px 0 0;
   border-bottom: 2px solid #eee;
-  margin-bottom: 0;
 }
 
 .section-header h1 {
   font-size: 1.8rem;
   color: #333;
   margin: 0;
-  flex-shrink: 0;
 }
 
 .empty-state {
@@ -280,22 +269,32 @@ body {
   margin: 15px;
 }
 
-/* ========================================================= */
-/* 4. TRUCK CARD & GRID STYLES                               */
-/* ========================================================= */
-.truck-grid {
+/* Unified Grid Containers */
+.truck-grid,
+.driver-grid,
+.card-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 15px;
+  gap: 20px;
   padding: 15px;
-  background-color: white;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.truck-card {
-  background-color: #fefefe;
-  border: 1px solid #ddd;
+.truck-grid,
+.driver-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  background-color: white;
+  border-radius: 0 0 10px 10px;
+}
+
+.card-list {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  padding: 20px 0; /* Deliveries list has no container bg */
+}
+
+/* Unified Card Styles */
+.truck-card,
+.driver-card,
+.card-item {
+  background-color: #fff;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -304,15 +303,22 @@ body {
   flex-direction: column;
 }
 
-.truck-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+.truck-card,
+.driver-card {
+  border: 1px solid #ddd;
 }
 
+.truck-card:hover,
+.driver-card:hover,
+.card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Content Specifics */
 .truck-image-container {
   height: 140px;
   width: 100%;
-  overflow: hidden;
   position: relative;
 }
 
@@ -320,78 +326,78 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
 }
 
 .truck-image-container .status-badge {
   position: absolute;
   top: 8px;
   right: 8px;
-  padding: 4px 8px;
-  border-radius: 5px;
   z-index: 2;
-  font-size: 0.8rem;
 }
 
-.truck-details {
-  padding: 8px 10px;
+.truck-details,
+.driver-details {
+  padding: 10px;
   flex-grow: 1;
 }
 
-.truck-name {
+.truck-name,
+.driver-name {
   font-size: 1rem;
   color: #007bff;
-  margin-bottom: 5px;
+  margin: 0 0 5px 0;
   border-bottom: 1px dashed #eee;
   padding-bottom: 3px;
 }
-
-.truck-details p {
-  margin: 2px 0;
-  font-size: 0.8rem;
+.driver-name {
+  font-size: 1.1rem;
+  border-bottom: none;
 }
 
-.truck-details strong {
+.truck-details p,
+.driver-details p,
+.card-details p {
+  margin: 2px 0;
+  font-size: 0.85rem;
+}
+
+.truck-details strong,
+.driver-details strong,
+.card-details strong {
   font-weight: 600;
   color: #333;
 }
 
-.truck-actions {
-  display: flex;
-  justify-content: space-around;
-  padding: 8px 10px;
-  border-top: 1px solid #eee;
-  background-color: #f8f9fa;
+/* Delivery Card Specifics */
+.card-item {
+  padding: 20px;
+  border-top: 5px solid #007bff;
+  justify-content: space-between;
 }
 
-/* ========================================================= */
-/* 5. DRIVER CARD & GRID STYLES                              */
-/* ========================================================= */
-.driver-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
-  padding: 15px;
-  background-color: white;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.card-details h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.3em;
+  color: #007bff;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 8px;
 }
 
-.driver-card {
-  background-color: #fefefe;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+/* Driver Profile Specifics */
+.driver-profile-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  margin-right: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
+  flex-shrink: 0;
 }
-
-.driver-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+.driver-profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .driver-status-header {
@@ -403,83 +409,21 @@ body {
   margin-bottom: 5px;
 }
 
-.driver-name {
-  font-size: 1.1rem;
-  color: #007bff;
-  margin: 0;
-}
-
-.driver-details p {
-  margin: 2px 0;
-  font-size: 0.85rem;
-}
-
-.driver-details strong {
-  font-weight: 600;
-  color: #333;
-}
-
+/* Card Action Areas */
+.truck-actions,
 .driver-actions {
   display: flex;
   justify-content: space-around;
-  padding: 8px 0 0 0;
+  padding: 8px 10px;
   border-top: 1px solid #eee;
+  background-color: #f8f9fa;
   margin-top: auto;
 }
-
-/* =========================================================
- * 6. DELIVERY CARD & LIST STYLES (Refined)
- * ========================================================= */
-
-/* General Card List Container */
-.card-list {
-  display: grid;
-  /* Maintain a minimum size, but allow wider cards */
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 25px; /* Increased gap */
-  padding: 20px 0;
+.driver-actions {
+  padding: 8px 0 0 0;
+  background-color: transparent;
 }
 
-/* Card Item Styling (Delivery Specific) */
-.card-item {
-  background-color: #ffffff; /* White background */
-  border-radius: 10px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Slightly heavier shadow for emphasis */
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-top: 5px solid #007bff; /* Primary blue top border */
-  border-left: none; /* Removed left border for a cleaner look */
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card-item:hover {
-  transform: translateY(-4px); /* Increased lift on hover */
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
-}
-
-/* Card Details (Text content) */
-.card-details {
-  flex-grow: 1; /* Allows details section to take up available space */
-}
-
-.card-details h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 1.3em;
-  color: #007bff; /* Primary color for title */
-  border-bottom: 1px dashed #eee;
-  padding-bottom: 8px;
-}
-
-.card-details p {
-  margin-bottom: 8px;
-  font-size: 0.95em;
-  color: #555;
-}
-
-/* Actions Section (Buttons) */
 .card-actions {
   display: flex;
   justify-content: flex-end;
@@ -489,21 +433,8 @@ body {
   border-top: 1px solid #eee;
 }
 
-/* Added specific style for a 'View Map' button if applicable */
-.view-map-btn {
-  background-color: #17a2b8; /* Info blue */
-  color: white;
-  padding: 8px 15px;
-  border-radius: 5px;
-  font-weight: 600;
-  transition: background-color 0.2s;
-}
-
-.view-map-btn:hover {
-  background-color: #138496;
-}
 /* ========================================================= */
-/* 7. TABLE STYLES                                           */
+/* 5. TABLES                                                 */
 /* ========================================================= */
 .data-table-container {
   overflow-x: auto;
@@ -537,21 +468,13 @@ body {
 .data-table tbody tr:nth-child(even) {
   background-color: #fdfdfd;
 }
-
 .data-table tbody tr:hover {
   background-color: #f0f8ff;
 }
 
-.data-table td .icon-btn {
-  padding: 6px 10px;
-  font-size: 0.8em;
-}
-
 /* ========================================================= */
-/* 8. BUTTON & BADGE UTILITIES                               */
+/* 6. BUTTONS & BADGES                                       */
 /* ========================================================= */
-
-/* --- Primary Action Buttons (Add Truck/Driver, Logout) --- */
 .action-btn {
   background-color: #007bff;
   color: white;
@@ -559,19 +482,17 @@ body {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
   font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
+  transition: background-color 0.2s;
 }
-
 .action-btn:hover {
   background-color: #0056b3;
 }
 
-/* --- CRUD/Inline Action Buttons (Used in Cards/Tables) --- */
 .crud-btn,
 .icon-btn {
   padding: 8px 15px;
@@ -580,39 +501,29 @@ body {
   cursor: pointer;
   font-size: 0.9em;
   font-weight: 600;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
-  color: white;
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
   justify-content: center;
+  gap: 5px;
+  color: white;
+  transition: opacity 0.2s;
 }
-
 .crud-btn:hover,
 .icon-btn:hover {
   opacity: 0.9;
 }
 
-/* Base style for icon buttons (used for truck/driver actions) */
+/* In-Card Buttons */
 .truck-actions .icon-btn,
 .driver-actions .icon-btn {
   flex-grow: 1;
   margin: 0 3px;
   padding: 6px;
-  border-radius: 5px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
   background-color: #fff;
   border: 1px solid #ddd;
-  color: inherit; /* Reset color for specific overrides */
+  color: inherit;
 }
 
-/* Edit Button (Primary Blue) */
 .edit-btn {
   background-color: #007bff;
   color: white;
@@ -626,7 +537,6 @@ body {
   background-color: #d0e4ff;
 }
 
-/* Delete Button (Danger Red) */
 .delete-btn {
   background-color: #dc3545;
   color: white;
@@ -640,33 +550,32 @@ body {
   background-color: #ffcccc;
 }
 
-.delete-btn.disabled,
-.btn:disabled,
-.btn[disabled] {
+.delete-btn:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
   opacity: 0.7;
 }
-
-.delete-btn.disabled:hover {
-  opacity: 0.7;
+.green-btn {
+  background-color: #28a745 !important;
+  color: white;
+}
+.green-btn:hover {
+  background-color: #1e7e34 !important;
 }
 
-/* --- Status Badges (Consolidated) --- */
+/* Badges */
 .status-badge,
 .badge {
   display: inline-block;
   padding: 5px 10px;
-  border-radius: 15px; /* Use consistent radius */
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 0.8rem; /* Use consistent font size */
+  font-size: 0.8rem;
   text-transform: capitalize;
-  color: #333; /* Default dark text for better contrast on lighter badges */
+  color: #333;
 }
-
 .badge {
   padding: 4px 8px;
-  border-radius: 12px;
   text-transform: uppercase;
   color: #fff;
 }
@@ -676,35 +585,35 @@ body {
   background-color: #d4edda;
   color: #155724;
 }
+.badge.status-completed {
+  background-color: #28a745;
+  color: white;
+}
 
 .status-unavailable,
 .status-cancelled {
   background-color: #f8d7da;
   color: #721c24;
 }
+.badge.status-cancelled {
+  background-color: #dc3545;
+  color: white;
+}
 
 .status-in-transit,
 .status-maintenance,
-.status-on-route {
+.status-on-route,
+.status-in-progress {
   background-color: #fff3cd;
   color: #856404;
-}
-
-/* Override for badge specific colors where white text is needed */
-.badge.status-active {
-  background-color: #007bff;
-  color: white;
 }
 .badge.status-in-progress {
   background-color: #ffc107;
   color: #333;
 }
-.badge.status-completed {
-  background-color: #28a745;
-  color: white;
-}
-.badge.status-cancelled {
-  background-color: #dc3545;
+
+.badge.status-active {
+  background-color: #007bff;
   color: white;
 }
 .badge.status-inactive {
@@ -713,23 +622,20 @@ body {
 }
 
 /* ========================================================= */
-/* 9. FORM STYLES                                            */
+/* 7. FORMS & UPLOADS                                        */
 /* ========================================================= */
 .data-form {
   padding: 10px;
 }
-
 .data-form .form-group {
   margin-bottom: 15px;
   position: relative;
   flex: 1;
 }
-
 .data-form .form-row {
   display: flex;
   gap: 20px;
 }
-
 .data-form label {
   display: block;
   font-weight: 600;
@@ -737,13 +643,14 @@ body {
   color: #555;
   font-size: 0.9em;
 }
+.data-form .form-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 5px;
+}
 
-.data-form input[type="text"],
-.data-form input[type="number"],
-.data-form input[type="date"],
-.data-form input[type="email"],
-.data-form input[type="password"],
-.data-form input[type="datetime-local"],
+.data-form input,
 .data-form select,
 .data-form textarea {
   width: 100%;
@@ -753,7 +660,6 @@ body {
   font-size: 1rem;
   box-sizing: border-box;
 }
-
 .data-form textarea {
   resize: vertical;
   min-height: 60px;
@@ -761,7 +667,7 @@ body {
 
 .data-form .submit-btn {
   width: 100%;
-  background-color: #28a745; /* Green for creation/submit */
+  background-color: #28a745;
   color: white;
   border: none;
   padding: 12px;
@@ -772,27 +678,69 @@ body {
   margin-top: 20px;
   transition: background-color 0.2s;
 }
-
 .data-form .submit-btn:hover {
   background-color: #1e7e34;
 }
 
-.green-btn {
-  background-color: #28a745 !important;
+/* Image Upload Area */
+.upload-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.drop-area {
+  border: 2px dashed #007bff;
+  padding: 30px 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.drop-area.dragover {
+  background-color: #e9f7fe;
+}
+.drop-area p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+.drop-area span {
+  color: #007bff;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
-.green-btn:hover {
-  background-color: #1e7e34 !important;
+.preview-container {
+  margin-top: 15px;
+  text-align: center;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.preview-container img {
+  max-width: 100%;
+  max-height: 200px;
+  margin-bottom: 10px;
+  border-radius: 5px;
 }
 
-.data-form .form-hint {
-  display: block;
-  font-size: 0.8rem;
-  color: #999;
-  margin-top: 5px;
+.clear-image-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.clear-image-btn:hover {
+  background-color: #c82333;
 }
 
-/* --- Alert Messages (In-form) --- */
+/* Alerts */
 .alert {
   padding: 15px;
   margin-bottom: 20px;
@@ -811,85 +759,9 @@ body {
   border: 1px solid #f5c6cb;
 }
 
-/* --- TRUCK IMAGE UPLOAD STYLES --- */
-.upload-container {
-  text-align: center;
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.drop-area {
-  border: 2px dashed #007bff;
-  padding: 30px 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.drop-area.dragover {
-  background-color: #e9f7fe;
-}
-
-.drop-area p {
-  font-size: 16px;
-  color: #666;
-  margin: 0;
-}
-
-.drop-area span {
-  color: #007bff;
-  cursor: pointer;
-  font-weight: 600;
-  text-decoration: underline;
-}
-
-.preview-container {
-  margin-top: 15px;
-  text-align: center;
-  border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: #fff;
-}
-
-.preview-container img {
-  max-width: 100%;
-  max-height: 200px;
-  display: block;
-  margin: 0 auto 10px auto;
-  border-radius: 5px;
-}
-
-.clear-image-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s;
-}
-
-.clear-image-btn:hover {
-  background-color: #c82333;
-}
-
-#editCurrentPathText {
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 10px;
-}
-#editCurrentPathName {
-  font-weight: 600;
-}
-
 /* ========================================================= */
-/* 10. MODAL STYLES                                          */
+/* 8. MODALS & MEDIA QUERIES                                 */
 /* ========================================================= */
-
-/* --- General Data Modal (Forms) --- */
 .modal {
   display: none;
   position: fixed;
@@ -909,10 +781,9 @@ body {
   border-radius: 10px;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
+  animation: animatetop 0.4s;
   position: relative;
-  animation-name: animatetop;
-  animation-duration: 0.4s;
 }
 
 @keyframes animatetop {
@@ -926,14 +797,6 @@ body {
   }
 }
 
-.modal-content h2 {
-  border-bottom: 2px solid #eee;
-  padding-bottom: 15px;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  color: #333;
-}
-
 .close-btn {
   color: #aaa;
   font-size: 28px;
@@ -942,104 +805,56 @@ body {
   top: 10px;
   right: 20px;
   cursor: pointer;
-  line-height: 1;
-  padding: 0;
   background: none;
   border: none;
 }
-
-.close-btn:hover,
-.close-btn:focus {
+.close-btn:hover {
   color: #333;
-  text-decoration: none;
 }
 
-/* --- Message Popup (Success/Error) --- */
-.message-modal {
-  display: none;
-  position: fixed;
-  z-index: 2000;
-  left: 0;
-  top: 0;
+/* Map Modal Specifics */
+.map-modal-content {
+  max-width: 900px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+#googleMapContainer {
   width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-}
-
-.message-modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 0;
-  border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  position: relative;
-  animation: popupAnim 0.3s ease-out;
-  overflow: hidden;
-}
-
-@keyframes popupAnim {
-  from {
-    transform: scale(0.7);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.message-header {
-  padding: 15px;
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.msg-success {
-  background-color: #28a745;
-}
-
-.msg-error {
-  background-color: #dc3545;
-}
-
-.message-body {
-  padding: 25px 20px;
-  color: #333;
-  font-size: 1rem;
-}
-
-.message-footer {
-  padding: 10px 0 20px 0;
-}
-
-.message-close-btn {
-  background-color: #eee;
-  border: none;
-  padding: 8px 20px;
+  flex-grow: 1;
+  margin-top: 15px;
+  border: 2px solid #ddd;
   border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
-  color: #333;
-  transition: background 0.2s;
+  min-height: 400px;
+}
+.map-controls {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  border: 1px solid #eee;
+}
+.map-controls .form-group {
+  margin-bottom: 0;
+}
+.map-btn-group {
+  display: flex;
+  gap: 10px;
 }
 
-.message-close-btn:hover {
-  background-color: #ddd;
-}
-
-/* ========================================================= */
-/* 11. MEDIA QUERIES                                         */
-/* ========================================================= */
 @media (max-width: 650px) {
   .data-form .form-row {
     flex-direction: column;
   }
-  .truck-grid {
+  .truck-grid,
+  .driver-grid,
+  .card-list {
     grid-template-columns: 1fr;
+  }
+  .map-controls {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
