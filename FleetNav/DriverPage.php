@@ -16,9 +16,19 @@ $accountType = htmlspecialchars($_SESSION['accountType']);
 $driverID = $_SESSION['accountID'];
 
 // Profile Image Logic
+$profileImgSrc = ""; // Initialize variable
+
 if (!empty($profileFilename)) {
-    $profileImgSrc = BASE_URL . "uploads/" . $profileFilename;
+    // CHECK: Does the database value already include "uploads/"?
+    if (strpos($profileFilename, 'uploads/') === 0) {
+        // Yes: The DB has "uploads/image.png", so we just add BASE_URL
+        $profileImgSrc = BASE_URL . $profileFilename;
+    } else {
+        // No: The DB has "image.png", so we must add "uploads/" manually
+        $profileImgSrc = BASE_URL . "uploads/" . $profileFilename;
+    }
 } else {
+    // Fallback if no image is set
     $profileImgSrc = BASE_URL . "blank-profile-picture-973460_960_720-587709513.png";
 }
 // Determine View
