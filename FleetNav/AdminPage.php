@@ -288,7 +288,7 @@ function logAction($conn, $actionType, $details) {
                                             <?php $isSelf = ($user['accountID'] == $adminID); ?>
                                             <?php $isTargetSuperAdmin = $user['accountType'] === 'Super Admin'; ?>
                                             
-                                            <button class="icon-btn edit-btn" title="Edit User" onclick="openEditDriverModal(this)" <?php echo $isSelf ? '' : ''; // Allow self-edit for now ?>><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="icon-btn edit-btn" title="Edit User" onclick="openEditDriverModal(this)" <?php echo $isSelf ? '' : ''; // Allow self-edit for now ?>><i class="fas fa-edit"></i> <?php echo $isSuperAdmin ? 'Edit' : 'View'; ?></button>
                                             
                                             <button class="icon-btn delete-btn" title="Delete User" 
                                                 onclick="confirmDeleteDriver(<?php echo htmlspecialchars($user['accountID']); ?>, '<?php echo htmlspecialchars($user['firstName'] . ' ' . $user['lastName']); ?>', <?php echo $isAssigned ? 'true' : 'false'; ?>, '<?php echo htmlspecialchars($user['accountType']); ?>')"
@@ -466,14 +466,16 @@ function logAction($conn, $actionType, $details) {
                     <div class="form-group" style="margin-bottom:0; min-width: 150px;">
                         <label for="log_type" style="font-size:0.85rem;">Action Type:</label>
                         <select id="log_type" name="log_type">
-                            <option value="">All Actions</option>
-                            <option value="ADD" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'ADD') ? 'selected' : ''; ?>>Add (Create)</option>
-                            <option value="EDIT" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'EDIT') ? 'selected' : ''; ?>>Edit (Update)</option>
-                            <option value="DELETE" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'DELETE') ? 'selected' : ''; ?>>Delete (Remove)</option>
-                            <option value="LOGIN" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'LOGIN') ? 'selected' : ''; ?>>Login</option>
-                            <option value="REPORT" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'REPORT') ? 'selected' : ''; ?>>Report Gas Updates</option>
-                            <option value="PROFILE" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'PROFILE') ? 'selected' : ''; ?>>Profile Updates</option>
-                        </select>
+    <option value="">All Actions</option>
+    <option value="ADD" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'ADD') ? 'selected' : ''; ?>>Add (Create)</option>
+    <option value="EDIT" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'EDIT') ? 'selected' : ''; ?>>Edit (Update)</option>
+    <option value="DELETE" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'DELETE') ? 'selected' : ''; ?>>Delete (Remove)</option>
+    <option value="LOGIN" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'LOGIN') ? 'selected' : ''; ?>>Login</option>
+    
+    <option value="LOGOUT" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'LOGOUT') ? 'selected' : ''; ?>>Logout</option>
+    <option value="REPORT" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'REPORT') ? 'selected' : ''; ?>>Report Gas Updates</option>
+    <option value="PROFILE" <?php echo (isset($_GET['log_type']) && $_GET['log_type'] == 'PROFILE') ? 'selected' : ''; ?>>Profile Updates</option>
+</select>
                     </div>
 
                     <div class="form-group" style="margin-bottom:0; flex: 0 0 auto; display: flex; gap: 10px;">
@@ -550,11 +552,12 @@ function logAction($conn, $actionType, $details) {
                             
                             // Visual Badge Coloring
                             $badgeColor = '#007bff'; 
-                            if (stripos($log['action_type'], 'DELETE') !== false) $badgeColor = '#dc3545'; 
-                            if (stripos($log['action_type'], 'ADD') !== false) $badgeColor = '#28a745'; 
-                            if (stripos($log['action_type'], 'EDIT') !== false) $badgeColor = '#ffc107'; 
-                            if (stripos($log['action_type'], 'LOGIN') !== false) $badgeColor = '#17a2b8';
-                            if (stripos($log['action_type'], 'GAS') !== false) $badgeColor = '#6610f2'; // Indigo/Purple
+if (stripos($log['action_type'], 'DELETE') !== false) $badgeColor = '#dc3545'; 
+if (stripos($log['action_type'], 'ADD') !== false) $badgeColor = '#28a745'; 
+if (stripos($log['action_type'], 'EDIT') !== false) $badgeColor = '#ffc107'; 
+if (stripos($log['action_type'], 'LOGIN') !== false) $badgeColor = '#17a2b8';
+if (stripos($log['action_type'], 'LOGOUT') !== false) $badgeColor = '#6c757d'; 
+if (stripos($log['action_type'], 'GAS') !== false) $badgeColor = '#6610f2';
                         ?> 
                     <tr> 
                         <td style="color: #555; font-size: 0.9em;"> 
@@ -643,12 +646,17 @@ function logAction($conn, $actionType, $details) {
                 
                 <?php if ($isSuperAdmin): ?>
                     <div class="form-group">
-                        <label for="accountType">Account Role:</label>
-                        <select class="form-control" id="accountType" name="accountType" required>
+                        <label for="addAccountType">Account Role:</label>
+                        <select class="form-control" id="addAccountType" name="accountType" required onchange="toggleAddAdminPassField()">
                             <option value="Driver">Driver</option>
                             <option value="Admin">Admin</option>
                             <option value="Super Admin">Super Admin</option>
                         </select>
+                    </div>
+                    
+                    <div class="form-group" id="addAdminRegPassContainer" style="display: none;">
+                        <label for="addAdminRegPass">Admin Registration Password (Required for Admin/Super Admin):</label>
+                        <input type="password" class="form-control" id="addAdminRegPass" name="adminRegPass" placeholder="Enter Admin Registration Password">
                     </div>
                 <?php else: ?>
                     <input type="hidden" name="accountType" value="Driver">
@@ -661,7 +669,7 @@ function logAction($conn, $actionType, $details) {
     <div id="editDriverModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="document.getElementById('editDriverModal').style.display='none';">&times;</span>
-            <h2>Edit User <span id="editUserIDDisplay"></span></h2>
+            <h2 id="editDriverModalTitle">Edit User <span id="editUserIDDisplay"></span></h2>
             <form class="data-form" id="editDriverForm" method="POST">
                 <input type="hidden" name="editAccountID" id="editAccountID">
                 <input type="hidden" name="editCurrentAccountType" id="editCurrentAccountType"> <div class="form-row">
@@ -681,7 +689,7 @@ function logAction($conn, $actionType, $details) {
                 </div>
                 
                 <div class="form-group" id="adminRegPassContainer" style="display: none;">
-                    <label for="adminRegPass">Admin Registration Password (Required for Role Change):</label>
+                    <label for="adminRegPass">Admin Registration Password (Required to Save Changes):</label>
                     <input type="password" class="form-control" id="adminRegPass" name="adminRegPass" placeholder="Enter Admin Registration Password">
                 </div>
                 <?php else: ?>
@@ -690,7 +698,7 @@ function logAction($conn, $actionType, $details) {
 
                 <div class="form-group"><label for="editPassword">New Password (optional)</label><input type="password" id="editPassword" name="editPassword" placeholder="Leave blank to keep current password"></div>
                 
-                <button type="submit" name="edit_driver_submit" class="submit-btn green-btn">SAVE CHANGES</button>
+                <button type="submit" name="edit_driver_submit" id="editDriverSubmitBtn" class="submit-btn green-btn">SAVE CHANGES</button>
             </form>
         </div>
     </div>
@@ -714,7 +722,7 @@ function logAction($conn, $actionType, $details) {
                     <div class="form-group"> 
                         <label for="truckStatus">Truck Status *</label> 
                         <select id="truckStatus" name="truckStatus" required> 
-                            <option value="Available">Available</option><option value="Unavailable">Unavailable</option><option value="In Transit">In Transit</option><option value="Maintenance">Maintenance</option> 
+                            <option value="Available">Available</option><option value="Unavailable">Unavailable</option><option value="Maintenance">Maintenance</option> 
                         </select> 
                     </div> 
                     <div class="form-group"> 
@@ -729,8 +737,8 @@ function logAction($conn, $actionType, $details) {
     <div class="form-group">
         <label for="truckImage">Truck Image</label>
         <div class="preview-container" id="truckImagePreviewContainer" style="display:none;">
-            <img id="truckImagePreview" src="#" alt="Truck Image Preview" style="max-width: 100%; max-height: 200px; display: block; margin-bottom: 10px;">
-            <button type="button" class="clear-img-btn red-btn" id="addClearImageBtn">Clear Image</button>
+            <img id="truckImagePreview" src="#" alt="Truck Image Preview">
+            <button type="button" class="clear-image-btn red-btn" id="addClearImageBtn">Clear Image</button>
         </div>
         <div class="upload-container">
             <div id="dropArea" class="drop-area"><p>Drag & Drop or <span id="selectFileLink">select a file</span></p></div>
@@ -762,7 +770,7 @@ function logAction($conn, $actionType, $details) {
                     <div class="form-group"> 
                         <label for="editTruckStatus">Truck Status *</label> 
                         <select id="editTruckStatus" name="editTruckStatus" required> 
-                            <option value="Available">Available</option><option value="Unavailable">Unavailable</option><option value="In Transit">In Transit</option><option value="Maintenance">Maintenance</option> 
+                            <option value="Available">Available</option><option value="Unavailable">Unavailable</option><option value="Maintenance">Maintenance</option> 
                         </select> 
                     </div> 
                     <div class="form-group"> 
@@ -776,7 +784,7 @@ function logAction($conn, $actionType, $details) {
                 <div class="form-group"> 
                     <label for="editTruckImage">Truck Image</label> 
                     <div class="upload-container"> 
-                        <div id="editPreviewContainer" class="preview-container" style="display: none;"> 
+                        <div id="editPreviewContainer" class="preview-container" style="justify-content: center; display: none;"> 
                             <img id="editPreviewImage" src="" alt="Truck Image Preview"> 
                             <span id="editCurrentPathName"></span> 
                             <button type="button" class="clear-image-btn" id="editClearImageBtn">Remove Image</button> 
@@ -1021,33 +1029,6 @@ function logAction($conn, $actionType, $details) {
         
         // --- DRIVER JS (MODIFIED) ---
         
-        // [NEW] Function to show/hide the admin registration password field
-        function toggleAdminPassField() {
-            // We use editCurrentAccountType (hidden field) to store the original role
-            var currentTypeInput = document.getElementById('editCurrentAccountType');
-            var newTypeInput = document.getElementById('editAccountType');
-            var passContainer = document.getElementById('adminRegPassContainer');
-            var passInput = document.getElementById('adminRegPass');
-
-            // Safety check: if elements don't exist (e.g. non-Super Admin), exit
-            if (!passContainer || !passInput || !currentTypeInput || !newTypeInput) {
-                return;
-            }
-
-            var currentType = currentTypeInput.value;
-            var newType = newTypeInput.value;
-
-            // Only show the field if the new role is different from the current role
-            if (currentType !== newType) {
-                passContainer.style.display = 'block';
-                passInput.required = true;
-            } else {
-                passContainer.style.display = 'none';
-                passInput.required = false;
-                passInput.value = ''; // Clear the value if hidden
-            }
-        }
-        
         function confirmDeleteDriver(id, name, isAssigned, accountType) {
             let message = `Are you sure you want to delete ${accountType}: "${name}" (ID: ${id})? This action cannot be undone.`;
             
@@ -1073,7 +1054,25 @@ function logAction($conn, $actionType, $details) {
             }
         }
 
-        // [MODIFIED] openEditDriverModal to use the hidden field and toggle logic
+        // [NEW] Toggle function for Add User Modal
+        function toggleAddAdminPassField() {
+            const roleSelect = document.getElementById('addAccountType');
+            const passContainer = document.getElementById('addAdminRegPassContainer');
+            const passInput = document.getElementById('addAdminRegPass');
+            
+            if (roleSelect && passContainer && passInput) {
+                if (roleSelect.value === 'Admin' || roleSelect.value === 'Super Admin') {
+                    passContainer.style.display = 'block';
+                    passInput.required = true;
+                } else {
+                    passContainer.style.display = 'none';
+                    passInput.required = false;
+                    passInput.value = '';
+                }
+            }
+        }
+
+        // [MODIFIED] openEditDriverModal to enforce Read-Only for Admins vs Edit for Super Admins
         function openEditDriverModal(buttonElement) { 
             const card = buttonElement.closest('.driver-card'); 
             const accountID = card.dataset.accountid; 
@@ -1082,34 +1081,62 @@ function logAction($conn, $actionType, $details) {
             const email = card.dataset.email; 
             const accountType = card.dataset.accounttype; 
             
+            // Check current user role (injected via PHP)
+            const isSuperAdmin = <?php echo $isSuperAdmin ? 'true' : 'false'; ?>;
+
             document.getElementById('editAccountID').value = accountID; 
             document.getElementById('editUserIDDisplay').textContent = accountID; 
             document.getElementById('editFirstName').value = firstName; 
             document.getElementById('editLastName').value = lastName; 
             document.getElementById('editEmail').value = email; 
             
-            // 1. Set the hidden field with the original role (CRITICAL for logic)
             document.getElementById('editCurrentAccountType').value = accountType; 
 
-            // 2. Set the dropdown value to the original role
             const editAccountTypeSelect = document.getElementById('editAccountType'); 
             if (editAccountTypeSelect) { 
                 editAccountTypeSelect.value = accountType; 
             }
             
-            // 3. Check visibility of the admin pass field (will hide it initially since currentType === newType)
-            toggleAdminPassField(); 
+            const adminPassContainer = document.getElementById('adminRegPassContainer');
+            const submitBtn = document.getElementById('editDriverSubmitBtn');
+            const modalTitle = document.getElementById('editDriverModalTitle');
+            const formInputs = document.querySelectorAll('#editDriverForm input, #editDriverForm select');
+
+            if (isSuperAdmin) {
+                // SUPER ADMIN MODE: ENABLE EDITING
+                modalTitle.innerHTML = `Edit User <span id="editUserIDDisplay">${accountID}</span>`;
+                
+                // Enable inputs
+                formInputs.forEach(input => input.disabled = false);
+                
+                // Show Admin Password Field (Now ALWAYS required for changes)
+                if (adminPassContainer) {
+                    adminPassContainer.style.display = 'block';
+                    document.getElementById('adminRegPass').required = true;
+                }
+                
+                // Show Submit Button
+                if (submitBtn) submitBtn.style.display = 'block';
+
+            } else {
+                // REGULAR ADMIN MODE: VIEW ONLY
+                modalTitle.innerHTML = `View User Details <span id="editUserIDDisplay">${accountID}</span>`;
+                
+                // Disable inputs
+                formInputs.forEach(input => input.disabled = true);
+                
+                // Hide Admin Password Field
+                if (adminPassContainer) {
+                    adminPassContainer.style.display = 'none';
+                    document.getElementById('adminRegPass').required = false;
+                }
+                
+                // Hide Submit Button
+                if (submitBtn) submitBtn.style.display = 'none';
+            }
             
             document.getElementById('editDriverModal').style.display = 'block'; 
         }
-
-        // [NEW] Event listener to toggle visibility when role is changed in the modal
-        document.addEventListener('DOMContentLoaded', function() {
-            var editAccountTypeSelect = document.getElementById('editAccountType');
-            if (editAccountTypeSelect) {
-                editAccountTypeSelect.addEventListener('change', toggleAdminPassField);
-            }
-        });
 
         // --- TRUCK JS (FIXED) ---
         // Image preview logic for ADD truck modal
@@ -1126,7 +1153,7 @@ function logAction($conn, $actionType, $details) {
             reader.readAsDataURL(file);
             reader.onload = function() {
                 previewImage.src = reader.result;
-                previewContainer.style.display = 'block';
+                previewContainer.style.display = 'flex';
                 dropArea.style.display = 'none';
             };
         } 
@@ -1214,7 +1241,7 @@ function logAction($conn, $actionType, $details) {
                 editDropArea.style.display = 'none'; 
             } else { 
                 editPreviewContainer.style.display = 'none'; 
-                editDropArea.style.display = 'block'; 
+                editDropArea.style.display = 'flex'; 
                 editPreviewImage.src = '';
             } 
             

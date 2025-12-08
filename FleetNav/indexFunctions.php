@@ -171,6 +171,21 @@ function registerUser($conn) {
             $pass_stmt->execute();
             $pass_result = $pass_stmt->get_result();
 
+            // [FIXED] Auto-initialize table if empty
+            if ($pass_result->num_rows === 0) {
+                // Insert the default hash provided in the database schema (Password: '12345')
+                $defaultHash = password_hash('12345', PASSWORD_DEFAULT);
+                
+                $init_stmt = $conn->prepare("INSERT INTO adminRegPass (adminRegPass) VALUES (?)");
+                $init_stmt->bind_param("s", $defaultHash);
+                $init_stmt->execute();
+                $init_stmt->close();
+                
+                // Re-fetch to confirm and continue
+                $pass_stmt->execute();
+                $pass_result = $pass_stmt->get_result();
+            }
+
             if ($pass_result->num_rows === 0) {
                  $_SESSION['status'] = [
                     'type' => 'error',
