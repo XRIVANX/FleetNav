@@ -107,9 +107,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
     <title>Driver Dashboard</title>
 </head>
 <body>
+    <div class="menu-overlay" id="menuOverlay"></div>
+
     <div class="container">
-        <div class="sidebar">
-            <h1 class="logo">FleetNav</h1>
+        <div class="sidebar" id="sidebarMenu">
+            <div class="sidebar-header">
+                <h1 class="logo">FleetNav</h1>
+                <button class="close-menu-btn" id="closeMenuBtn"><i class="fas fa-times"></i></button>
+            </div>
+            
             <div class="nav">
                 <button class="nav-btn <?php echo $view === 'dashboard' ? 'active' : ''; ?>" onclick="window.location.href='DriverPage.php?view=dashboard'">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -121,16 +127,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
         </div>
 
         <div class="content-wrapper">
-            
             <header class="top-nav-bar">
-                <h2 class="page-title"><?php echo strtoupper($view === 'delivery' ? 'My Delivery' : 'Dashboard'); ?></h2>
-               <div class="user-profile">
-    <a href="EditProfile.php" title="Edit Profile">
-        <img src="<?php echo $profileImgSrc; ?>" alt="Profile" class="profile-icon">
-    </a>
-    <span class="user-name"><?php echo htmlspecialchars($fullName); ?></span>
-    <button class="logout-btn" onclick="window.location.href='logout.php';">Logout</button>
-</div>
+                <div class="header-left">
+                    <button class="menu-toggle-btn" id="menuToggleBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="page-title"><?php echo strtoupper($view === 'delivery' ? 'My Delivery' : 'Dashboard'); ?></h2>
+                </div>
+                
+                <div class="user-profile-section">
+                    <div class="profile-info">
+                        <span class="user-name"><?php echo htmlspecialchars($fullName); ?></span>
+                        <span class="user-role">Driver Account</span>
+                    </div>
+                    <a href="EditProfile.php" class="profile-link">
+                        <img src="<?php echo $profileImgSrc; ?>" alt="Profile" class="profile-icon">
+                    </a>
+                    <div class="logout-wrapper">
+                         <button class="logout-btn-icon" onclick="window.location.href='logout.php';" title="Logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
             </header>
 
             <div class="main-content-area">
@@ -144,5 +162,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
             </div>
         </div>
     </div>
+    <script>
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const sidebarMenu = document.getElementById('sidebarMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        function openMenu() {
+            sidebarMenu.classList.add('active');
+            menuOverlay.classList.add('active');
+        }
+
+        function closeMenu() {
+            sidebarMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        }
+
+        if(menuToggleBtn) menuToggleBtn.addEventListener('click', openMenu);
+        if(closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
+        if(menuOverlay) menuOverlay.addEventListener('click', closeMenu);
+    </script>
 </body>
 </html>
