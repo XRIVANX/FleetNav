@@ -22,8 +22,7 @@ DROP TABLE IF EXISTS `accounts`;
 
 CREATE TABLE `accounts` (
   `accountID` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) DEFAULT NULL,
-  `password` varchar(50) DEFAULT NULL,
+  `PASSWORD` varchar(255) DEFAULT NULL,
   `firstName` varchar(50) DEFAULT NULL,
   `lastName` varchar(50) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
@@ -31,8 +30,9 @@ CREATE TABLE `accounts` (
   `contactNo` varchar(50) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `address` varchar(100) DEFAULT NULL,
-  `profileImg` longblob DEFAULT NULL,
-  PRIMARY KEY (`accountID`)
+  `profileImg` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`accountID`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `accounts` */
@@ -54,6 +54,18 @@ CREATE TABLE `action_logs` (
 
 /*Data for the table `action_logs` */
 
+/*Table structure for table `adminregpass` */
+
+DROP TABLE IF EXISTS `adminregpass`;
+
+CREATE TABLE `adminregpass` (
+  `adminRegPassID` int(11) NOT NULL AUTO_INCREMENT,
+  `adminRegPass` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`adminRegPassID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `adminregpass` */
+
 /*Table structure for table `deliveries` */
 
 DROP TABLE IF EXISTS `deliveries`;
@@ -65,6 +77,8 @@ CREATE TABLE `deliveries` (
   `assignedTruck` int(11) DEFAULT NULL,
   `origin` varchar(200) DEFAULT NULL,
   `destination` varchar(200) DEFAULT NULL,
+  `deliveryDistance` varchar(50) DEFAULT NULL,
+  `allocatedGas` int(11) DEFAULT NULL,
   `estimatedTimeOfArrival` datetime DEFAULT NULL,
   `deliveryStatus` varchar(15) DEFAULT 'Inactive',
   PRIMARY KEY (`deliveryID`),
@@ -73,6 +87,28 @@ CREATE TABLE `deliveries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `deliveries` */
+
+/*Table structure for table `history_reports` */
+
+DROP TABLE IF EXISTS `history_reports`;
+
+CREATE TABLE `history_reports` (
+  `historyID` int(11) NOT NULL AUTO_INCREMENT,
+  `deliveryHistoryID` int(11) DEFAULT NULL,
+  `driverID` int(11) DEFAULT NULL,
+  `truckID` int(11) DEFAULT NULL,
+  `gasUsed` int(11) DEFAULT NULL,
+  `dateTimeCompleted` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`historyID`),
+  KEY `deliveryHistoryID` (`deliveryHistoryID`),
+  KEY `driverID` (`driverID`),
+  KEY `truckID` (`truckID`),
+  CONSTRAINT `history_reports_ibfk_1` FOREIGN KEY (`deliveryHistoryID`) REFERENCES `deliveries` (`deliveryID`),
+  CONSTRAINT `history_reports_ibfk_2` FOREIGN KEY (`driverID`) REFERENCES `accounts` (`accountID`),
+  CONSTRAINT `history_reports_ibfk_3` FOREIGN KEY (`truckID`) REFERENCES `trucks` (`truckID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `history_reports` */
 
 /*Table structure for table `trucks` */
 
@@ -83,11 +119,12 @@ CREATE TABLE `trucks` (
   `truckName` varchar(50) DEFAULT NULL,
   `plateNumber` varchar(15) DEFAULT NULL,
   `truckStatus` varchar(15) DEFAULT 'Available',
-  `odometerOrMileage` int(11) DEFAULT NULL,
+  `odometerOrMileage` int(11) DEFAULT 0,
   `registrationDate` date DEFAULT NULL,
   `assignedDriver` int(11) DEFAULT NULL,
-  `truckImg` longblob DEFAULT NULL,
+  `truckImg` varchar(225) DEFAULT NULL,
   PRIMARY KEY (`truckID`),
+  UNIQUE KEY `plateNumber` (`plateNumber`),
   KEY `assignedDriver` (`assignedDriver`),
   CONSTRAINT `trucks_ibfk_1` FOREIGN KEY (`assignedDriver`) REFERENCES `accounts` (`accountID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
